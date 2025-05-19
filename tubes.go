@@ -80,8 +80,46 @@ func tambahSahamBaru(T *arrSaham, n *int, kode string, harga float64) {
 	fmt.Println("Saham", kode, "telah berhasil ditambahkan ke daftar.")
 }
 
+
+
+// Mengurutkan saham dari harga termurah ke termahal
+func selectionSortTermurah(T *arrSaham, n int) {
+	var i, j, min int
+	var temp saham
+	
+	for i = 0; i < n-1; i++ {
+		min = i
+		for j = i + 1; j < n; j++ {
+			if T[j].Harga < T[min].Harga {
+				min = j
+			}
+		}
+		temp = T[i]
+		T[i] = T[min]
+		T[min] = temp
+	}
+}
+
+//Mengurutkan saham dari harga termahal ke termurah
+func insertionSortTermahal(T *arrSaham, n int) {
+	var i, j int
+	var key saham
+
+	for i = 1; i < n; i++ {
+		key = T[i]
+		j = i - 1
+
+		for j >= 0 && T[j].Harga < key.Harga {
+			T[j+1] = T[j]
+			j--
+		}
+		T[j+1] = key
+	}
+}
+
 func cariUser(T arrUser, n int, username string) int {
-	for i := 0; i < n; i++ {
+	var i int
+	for i = 0; i < n; i++ {
 		if T[i].Username == username {
 			return i
 		}
@@ -92,15 +130,16 @@ func cariUser(T arrUser, n int, username string) int {
 
 //Berfungsi untuk membeli saham
 func beliSaham(u *user, daftarSaham arrSaham, nSaham int, kode string, jumlah int) {
+	var i, j int
 	var ketemu bool = false
 	bersihLayar()
-	for i := 0; i < nSaham; i++ {
+	for i = 0; i < nSaham; i++ {
 		if daftarSaham[i].Kode == kode {
 			total := daftarSaham[i].Harga * float64(jumlah)
 			if u.Saldo >= total {
 				u.Saldo -= total
 				index := -1
-				for j := 0; j < u.JumData && !ketemu; j++ {
+				for j = 0; j < u.JumData && !ketemu; j++ {
 					if u.Portofolio[j] == kode {
 						index = j
 						ketemu = true
@@ -217,108 +256,139 @@ func main() {
 		fmt.Println("=================")
 
 		if pilihan == 1 {
-			fmt.Print("Username: ")
-			fmt.Scan(&username)
-			fmt.Print("Password: ")
-			fmt.Scan(&password)
+		fmt.Print("Username: ")
+		fmt.Scan(&username)
+		fmt.Print("Password: ")
+		fmt.Scan(&password)
 
-		if username == "admin" && password == "123456" {
-			var lanjutAdmin bool = true
-			for lanjutAdmin {
-				fmt.Println("\n========= Menu Admin =========")
-				fmt.Println("1. Lihat Harga Saham")
-				fmt.Println("2. Ubah Harga Saham")
-				fmt.Println("3. Lihat Semua User")
-				fmt.Println("4. Lihat Portofolio Semua User")
-				fmt.Println("5. Logout")
-				fmt.Print("Pilih (1/2/3/4/5): ")
-				fmt.Scan(&pilihan)
-				fmt.Println("=======================")
-
-				if pilihan == 1 {
-					tampilkanHarga(sahamList, jumlahSaham)
-				} else if pilihan == 2 {
-					fmt.Print("Kode saham: ")
-					fmt.Scan(&kode)
-					fmt.Print("Harga baru: ")
-					fmt.Scan(&nilai)
-					ubahHargaSaham(&sahamList, jumlahSaham, kode, nilai)
-				} else if pilihan == 3 {
-					tampilkanDaftarUser(pengguna, jumlahUser)
-				} else if pilihan == 4 {
-					tampilkanPortofolioSemuaUser(pengguna, jumlahUser)
-				} else if pilihan == 5 {
-					lanjutAdmin = false  // Logout admin
-				} else {
-					fmt.Println("Pilihan tidak valid")
-				}
-			}
-		} else {
-			index := cariUser(pengguna, jumlahUser, username)
-			if index != -1 && pengguna[index].Password == password {
-				var lanjutUser bool = true
-				for lanjutUser {
-					fmt.Println("\n=== Menu User ===")
+			if username == "admin" && password == "123456" {
+				var lanjutAdmin bool = true
+				bersihLayar()
+				fmt.Println("Login sebagai ADMIN berhasil!")
+				for lanjutAdmin {
+					fmt.Println("\n========= Menu Admin =========")
 					fmt.Println("1. Lihat Harga Saham")
-					fmt.Println("2. Beli Saham")
-					fmt.Println("3. Jual Saham")
-					fmt.Println("4. Lihat Portofolio")
-					fmt.Println("5. Logout")
-					fmt.Print("Pilih (1/2/3/4/5): ")
+					fmt.Println("2. Ubah Harga Saham")
+					fmt.Println("3. Tambah Saham Baru")
+					fmt.Println("4. Lihat Semua User")
+					fmt.Println("5. Lihat Portofolio Semua User")
+					fmt.Println("6. Logout")
+					fmt.Print("Pilih (1/2/3/4/5/6): ")
 					fmt.Scan(&pilihan)
-					fmt.Println("=================")
 
-					if pilihan == 1 {
+					switch pilihan {
+					case 1:
 						tampilkanHarga(sahamList, jumlahSaham)
-					} else if pilihan == 2 {
+					case 2:
 						bersihLayar()
 						tampilkanHarga(sahamList, jumlahSaham)
-						fmt.Println("=== Pembelian saham ===")
+						fmt.Println("========== Ubah Harga Saham ============")
 						fmt.Print("Kode saham: ")
 						fmt.Scan(&kode)
-						fmt.Print("Jumlah: ")
-						fmt.Scan(&jumlah)
-						beliSaham(&pengguna[index], sahamList, jumlahSaham, kode, jumlah)
-					} else if pilihan == 3 {
-						fmt.Print("Kode saham: ")
+						fmt.Print("Harga baru: ")
+						fmt.Scan(&nilai)
+						ubahHargaSaham(&sahamList, jumlahSaham, kode, nilai)
+					case 3:
+						bersihLayar()
+						fmt.Println("========== Tambah Saham Baru ============")
+						fmt.Print("Kode saham baru: ")
 						fmt.Scan(&kode)
-						fmt.Print("Jumlah: ")
-						fmt.Scan(&jumlah)
-						jualSaham(&pengguna[index], sahamList, jumlahSaham, kode, jumlah)
-					} else if pilihan == 4 {
-						tampilkanPortofolio(pengguna[index])
-					} else if pilihan == 5 {
-						lanjutUser = false  // Logout user
-					} else {
+						fmt.Print("Harga saham: ")
+						fmt.Scan(&nilai)
+						tambahSahamBaru(&sahamList, &jumlahSaham, kode, nilai)
+					case 4:
+						tampilkanDaftarUser(pengguna, jumlahUser)
+					case 5:
+						tampilkanPortofolioSemuaUser(pengguna, jumlahUser)
+					case 6:
+						lanjutAdmin = false
+					default:
 						fmt.Println("Pilihan tidak valid")
 					}
 				}
-			}
-		}
-
-		} else if pilihan == 2 {
-			if jumlahUser >= 100 {
-				fmt.Println("User maksimal tercapai.")
 			} else {
-				fmt.Print("Masukkan username baru: ")
-				fmt.Scan(&username)
-				if cariUser(pengguna, jumlahUser, username) == -1 {
-					fmt.Print("Masukkan password: ")
-					fmt.Scan(&password)
-					pengguna[jumlahUser] = user{Username: username, Password: password, Saldo: 1000000}
-					jumlahUser++
-					bersihLayar()
-					fmt.Println("Berhasil registrasi!")
-				} else {
-					fmt.Println("Username sudah digunakan")
+				index := cariUser(pengguna, jumlahUser, username)
+				if index != -1 && pengguna[index].Password == password {
+					var lanjutUser bool = true
+					for lanjutUser {
+						fmt.Println("\n=== Menu User ===")
+						fmt.Println("1. Lihat Harga Saham")
+						fmt.Println("2. Beli Saham")
+						fmt.Println("3. Jual Saham")
+						fmt.Println("4. Lihat Portofolio")
+						fmt.Println("5. Logout")
+						fmt.Print("Pilih (1/2/3/4/5): ")
+						fmt.Scan(&pilihan)
+						fmt.Println("=================")
+
+						switch pilihan {
+						case 1:
+							bersihLayar()
+							tampilkanHarga(sahamList, jumlahSaham)
+						case 2:
+							bersihLayar()
+							tampilkanHarga(sahamList, jumlahSaham)
+							fmt.Println("=== Pembelian saham ===")
+							fmt.Print("Kode saham: ")
+							fmt.Scan(&kode)
+							fmt.Print("Jumlah: ")
+							fmt.Scan(&jumlah)
+							beliSaham(&pengguna[index], sahamList, jumlahSaham, kode, jumlah)
+						case 3:
+							fmt.Print("Kode saham: ")
+							fmt.Scan(&kode)
+							fmt.Print("Jumlah: ")
+							fmt.Scan(&jumlah)
+							jualSaham(&pengguna[index], sahamList, jumlahSaham, kode, jumlah)
+						case 4:
+							tampilkanPortofolio(pengguna[index])
+						case 5:
+							lanjutUser = false
+						default:
+							fmt.Println("Pilihan tidak valid")
+						}
+					}
 				}
 			}
-		} else if pilihan == 3 {
-			tampilkanHarga(sahamList, jumlahSaham)
-		} else if pilihan == 4{
-			selesai = true
-		}else {
-			fmt.Println("Pilihan tidak valid")
+		} else {
+			switch pilihan {
+			case 2:
+				if jumlahUser >= 100 {
+					fmt.Println("User maksimal tercapai.")
+				} else {
+					fmt.Print("Masukkan username baru: ")
+					fmt.Scan(&username)
+					if cariUser(pengguna, jumlahUser, username) == -1 {
+						fmt.Print("Masukkan password: ")
+						fmt.Scan(&password)
+						pengguna[jumlahUser] = user{Username: username, Password: password, Saldo: 1000000}
+						jumlahUser++
+						bersihLayar()
+						fmt.Println("Berhasil registrasi!")
+					} else {
+						fmt.Println("Username sudah digunakan")
+					}
+				}
+			case 3:
+				tampilkanHarga(sahamList, jumlahSaham)
+				fmt.Println("=== Pilih Urutan Saham ===")
+				fmt.Println("1. Termahal ke Termurah")
+				fmt.Println("2. Termurah ke Termahal")
+				fmt.Print("Pilihan: ")
+				fmt.Scan(&pilihan)
+				if pilihan == 1 {
+					insertionSortTermahal(&sahamList, jumlahSaham)
+					tampilkanHarga(sahamList, jumlahSaham)
+				} else if pilihan == 2 {
+					selectionSortTermurah(&sahamList, jumlahSaham)
+					tampilkanHarga(sahamList, jumlahSaham)
+				}
+
+			case 4:
+				selesai = true
+			default:
+				fmt.Println("Pilihan tidak valid")
+			}
 		}
 	}
 }
