@@ -1,3 +1,8 @@
+/*
+Anggota :
+1. Muhammad Kresna
+2. M Husni Naufal K
+*/
 package main
 
 import (
@@ -50,38 +55,6 @@ func tampilkanHarga(T arrSaham, n int) {
 	}
 }
 
-//Untuk mengubah harga dari saham
-func ubahHargaSaham(T *arrSaham, n int, kode string, hargaBaru float64) {
-	for i := 0; i < n; i++ {
-		if T[i].Kode == kode {
-			T[i].Harga = hargaBaru
-			fmt.Println("Harga saham", kode, "diubah menjadi", hargaBaru)
-			return
-		}
-	}
-	fmt.Println("Kode saham tidak ditemukan.")
-}
-
-//Menambahkan saham baru
-func tambahSahamBaru(T *arrSaham, n *int, kode string, harga float64) {
-
-	for i:=0; i<*n; i++ {
-		if T[i].Kode == kode {
-			fmt.Println("Saham", kode, "sudah ada di daftar.")
-			return
-		}
-	}
-	if *n >= 100 {
-		fmt.Println("Daftar saham sudah penuh.")
-		return
-	}
-	T[*n] = saham{Kode: kode, Harga: harga}
-	*n++
-	fmt.Println("Saham", kode, "telah berhasil ditambahkan ke daftar.")
-}
-
-
-
 // Mengurutkan saham dari harga termurah ke termahal
 func selectionSortTermurah(T *arrSaham, n int) {
 	var i, j, min int
@@ -116,7 +89,37 @@ func insertionSortTermahal(T *arrSaham, n int) {
 		T[j+1] = key
 	}
 }
+//Untuk mengubah harga dari saham
+func ubahHargaSaham(T *arrSaham, n int, kode string, hargaBaru float64) {
+	for i := 0; i < n; i++ {
+		if T[i].Kode == kode {
+			T[i].Harga = hargaBaru
+			fmt.Println("Harga saham", kode, "diubah menjadi", hargaBaru)
+			return
+		}
+	}
+	fmt.Println("Kode saham tidak ditemukan.")
+}
 
+//Menambahkan saham baru
+func tambahSahamBaru(T *arrSaham, n *int, kode string, harga float64) {
+
+	for i:=0; i<*n; i++ {
+		if T[i].Kode == kode {
+			fmt.Println("Saham", kode, "sudah ada di daftar.")
+			return
+		}
+	}
+	if *n >= 100 {
+		fmt.Println("Daftar saham sudah penuh.")
+		return
+	}
+	T[*n] = saham{Kode: kode, Harga: harga}
+	*n++
+	fmt.Println("Saham", kode, "telah berhasil ditambahkan ke daftar.")
+}
+
+//
 func cariUser(T arrUser, n int, username string) int {
 	var i int
 	for i = 0; i < n; i++ {
@@ -130,7 +133,7 @@ func cariUser(T arrUser, n int, username string) int {
 
 //Berfungsi untuk membeli saham
 func beliSaham(u *user, daftarSaham arrSaham, nSaham int, kode string, jumlah int) {
-	var i, j int
+	var i, j, index int
 	var ketemu bool = false
 	bersihLayar()
 	for i = 0; i < nSaham; i++ {
@@ -138,7 +141,7 @@ func beliSaham(u *user, daftarSaham arrSaham, nSaham int, kode string, jumlah in
 			total := daftarSaham[i].Harga * float64(jumlah)
 			if u.Saldo >= total {
 				u.Saldo -= total
-				index := -1
+				index = -1
 				for j = 0; j < u.JumData && !ketemu; j++ {
 					if u.Portofolio[j] == kode {
 						index = j
@@ -238,7 +241,7 @@ func tampilkanPortofolioSemuaUser(T arrUser, n int) {
 func main() {
 	var pengguna arrUser
 	var sahamList arrSaham
-	var jumlahSaham, jumlah, pilihan int
+	var jumlahSaham, jumlah, pilihan, index int
 	var selesai bool = false
 	var username, password, kode string
 	var nilai float64
@@ -277,8 +280,18 @@ func main() {
 					fmt.Scan(&pilihan)
 
 					switch pilihan {
-					case 1:
-						tampilkanHarga(sahamList, jumlahSaham)
+					case 1:		
+							fmt.Println("1. Termahal ke Termurah (Descending)")
+							fmt.Println("2. Termurah ke Termahal (Ascending)")
+							fmt.Print("Pilihan: ")
+							fmt.Scan(&pilihan)
+							if pilihan == 1 {
+								insertionSortTermahal(&sahamList, jumlahSaham)
+								tampilkanHarga(sahamList, jumlahSaham)
+							} else if pilihan == 2 {
+								selectionSortTermurah(&sahamList, jumlahSaham)
+								tampilkanHarga(sahamList, jumlahSaham)
+							}
 					case 2:
 						bersihLayar()
 						tampilkanHarga(sahamList, jumlahSaham)
@@ -307,9 +320,11 @@ func main() {
 					}
 				}
 			} else {
-				index := cariUser(pengguna, jumlahUser, username)
+				index = cariUser(pengguna, jumlahUser, username)
 				if index != -1 && pengguna[index].Password == password {
 					var lanjutUser bool = true
+					bersihLayar()
+					fmt.Println("Hai ", username)
 					for lanjutUser {
 						fmt.Println("\n=== Menu User ===")
 						fmt.Println("1. Lihat Harga Saham")
@@ -370,10 +385,10 @@ func main() {
 					}
 				}
 			case 3:
-				tampilkanHarga(sahamList, jumlahSaham)
+				bersihLayar()
 				fmt.Println("=== Pilih Urutan Saham ===")
-				fmt.Println("1. Termahal ke Termurah")
-				fmt.Println("2. Termurah ke Termahal")
+				fmt.Println("1. Termahal ke Termurah (Descending)")
+				fmt.Println("2. Termurah ke Termahal (Ascending)")
 				fmt.Print("Pilihan: ")
 				fmt.Scan(&pilihan)
 				if pilihan == 1 {
