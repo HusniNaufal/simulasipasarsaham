@@ -34,10 +34,12 @@ type saham struct {
 type arrSaham [100]saham
 
 func initSaham(T *arrSaham, n *int) {
-	T[0] = saham{"BBCA", "Bank Central Asia", 8500, "75%"}
-	T[1] = saham{"TLKM", "Telkom Indonesia", 4200, "65%"}
-	T[2] = saham{"BBRI", "Bank Rakyat Indonesia", 5100, "74%"}
-	*n = 3
+	T[0] = saham{"BBCA", "Bank Central Asia", 8500, "50%"}
+	T[1] = saham{"TLKM", "Telkom Indonesia", 4200, "52%"}
+	T[2] = saham{"BBRI", "Bank Rakyat Indonesia", 5100, "57%"}
+	T[3] = saham{"ADRO", "Adaro Energy", 2200, "55%"}
+	T[4] = saham{"ANTM", "Aneka Tambang", 3110, "65%"}
+	*n = 5
 }
 
 func bersihLayar() {
